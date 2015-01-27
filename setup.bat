@@ -6,6 +6,4 @@ set NODE_PATH="%~dp0\bin\node_modules\npm\node_modules;%~dp0\bin\node_modules\np
 call npm.cmd install -g npm
 call npm.cmd install
 
-svn propset -R svn:ignore '*' .\node_modules
-
 rem vim:ff=dos:
