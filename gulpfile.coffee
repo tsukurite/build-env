@@ -9,7 +9,10 @@ jadeTarget  = './jade/**/!(_)*.jade'
 sassTarget  = './scss/**/!(_)*.scss'
 imageTarget = './image/**/*.{gif,jpg,jpeg,png}'
 
+exec = require('child_process').exec
+
 gulp    = require 'gulp'
+util    = require 'gulp-util'
 jade    = require 'gulp-jade'
 sass    = require 'gulp-sass'
 image   = require 'gulp-imagemin'
@@ -30,12 +33,20 @@ gulp.task 'jade', ->
     .pipe(gulp.dest(jadeOutput))
 
 gulp.task 'sass', ->
-  gulp
-    .src(sassTarget)
-    .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-    .pipe(cached('sass'))
-    .pipe(sass(outputStyle: 'nested'))
-    .pipe(gulp.dest(sassOutput))
+  if util.env.compass
+    p = exec('compass compile --config config.rb', (err, stdout, stderr) ->
+      util.log(err) if err
+      util.log(stdout)
+      util.log(stderr)
+    )
+    p.on('error', (err) -> util.log(err))
+  else
+    gulp
+      .src(sassTarget)
+      .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
+      .pipe(cached('sass'))
+      .pipe(sass(outputStyle: 'nested'))
+      .pipe(gulp.dest(sassOutput))
 
 gulp.task 'image', ->
   gulp
@@ -46,8 +57,18 @@ gulp.task 'image', ->
     .pipe(gulp.dest(imageOutput))
 
 gulp.task 'watch', ->
+  if util.env.compass
+    p = exec('compass watch --config config.rb', (err, stdout, stderr) ->
+      util.log(err) if err
+      util.log(stdout)
+      util.log(stderr)
+    )
+    p.on('error', (err) -> util.log(err))
+    process.on('exit', (code) -> p.kill('SIGINT'))
+  else
+    watch(sassTarget, -> gulp.start('sass'))
+
   watch(jadeTarget,  -> gulp.start('jade'))
-  watch(sassTarget,  -> gulp.start('sass'))
   watch(imageTarget, -> gulp.start('image'))
   return
 
