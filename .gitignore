@@ -1,2 +1,14 @@
+# node.js
 npm-debug.log
 /node_modules/
+
+# compass
+/.sass-cache/
+
+# asset
+jade/*
+!jade/.gitkeep
+scss/*
+!scss/.gitkeep
+image/*
+!image/.gitkeep
