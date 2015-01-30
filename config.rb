@@ -23,3 +23,11 @@ javascripts_dir = "../webroot/js"
 # preferred_syntax = :sass
 # and then run:
 # sass-convert -R --from scss --to sass sass scss && rm -rf sass && mv scss sass
+
+if environment == :production
+  output_style = :compressed
+  line_comments = false
+else
+  output_style = :nested
+  line_comments = true
+end

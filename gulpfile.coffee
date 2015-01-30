@@ -24,17 +24,36 @@ plumber = require 'gulp-plumber'
 
 serve = require 'serve-static'
 
+if util.env.production
+  jadeOption =
+    debug: false
+    pretty: true
+  sassOption =
+    outputStyle: 'compressed'
+    sourceComments: false
+else
+  jadeOption =
+    debug: true
+    pretty: true
+  sassOption =
+    outputStyle: 'nested'
+    sourceComments: true
+
 gulp.task 'jade', ->
   gulp
     .src(jadeTarget)
     .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
     .pipe(cached('jade'))
-    .pipe(jade(pretty: true))
+    .pipe(jade(jadeOption))
     .pipe(gulp.dest(jadeOutput))
 
 gulp.task 'sass', ->
   if util.env.compass
-    p = exec('compass compile --config config.rb', (err, stdout, stderr) ->
+    command =
+      if util.env.production
+      then 'compass compile --config config.rb --environment production --force'
+      else 'compass compile --config config.rb'
+    p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
       util.log(stderr)
@@ -45,7 +64,7 @@ gulp.task 'sass', ->
       .src(sassTarget)
       .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
       .pipe(cached('sass'))
-      .pipe(sass(outputStyle: 'nested'))
+      .pipe(sass(sassOption))
       .pipe(gulp.dest(sassOutput))
 
 gulp.task 'image', ->
@@ -70,6 +89,7 @@ gulp.task 'watch', ->
 
   watch(jadeTarget,  -> gulp.start('jade'))
   watch(imageTarget, -> gulp.start('image'))
+
   return
 
 gulp.task 'server', ->
