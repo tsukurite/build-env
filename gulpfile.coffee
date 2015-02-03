@@ -5,6 +5,13 @@ jadeOutput  = '../views'
 sassOutput  = '../webroot/css'
 imageOutput = '../webroot/image'
 
+jadeEncoding =
+  from: 'utf8'
+  to: 'shift_jis'
+sassEncoding =
+  from: 'utf8'
+  to: 'shift_jis'
+
 jadeTarget  = './jade/**/!(_)*.jade'
 sassTarget  = './scss/**/!(_)*.scss'
 imageTarget = './image/**/*.{gif,jpg,jpeg,png}'
@@ -21,6 +28,7 @@ server  = require 'gulp-webserver'
 cached  = require 'gulp-cached'
 notify  = require 'gulp-notify'
 plumber = require 'gulp-plumber'
+convert = require 'gulp-convert-encoding'
 
 serve = require 'serve-static'
 
@@ -45,6 +53,7 @@ gulp.task 'jade', ->
     .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
     .pipe(cached('jade'))
     .pipe(jade(jadeOption))
+    .pipe(convert(jadeEncoding))
     .pipe(gulp.dest(jadeOutput))
 
 gulp.task 'sass', ->
@@ -65,6 +74,7 @@ gulp.task 'sass', ->
       .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
       .pipe(cached('sass'))
       .pipe(sass(sassOption))
+      .pipe(convert(sassEncoding))
       .pipe(gulp.dest(sassOutput))
 
 gulp.task 'image', ->
