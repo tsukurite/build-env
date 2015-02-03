@@ -38,8 +38,6 @@ output_encoding = Encoding::Shift_JIS.name
 
 # convert encoding and replace charset when saved
 on_stylesheet_saved do |filename|
-  return if input_encoding == output_encoding
-
   # convert and replace
   File.open("#{filename}.bak", "w:#{output_encoding}") do |output|
 
@@ -52,5 +50,14 @@ on_stylesheet_saved do |filename|
 
     # overwrite css
     File.rename("#{filename}.bak", filename)
+  end
+
+  # request LiveReload
+  begin
+    Net::HTTP.start('127.0.0.1', 35729) do |http|
+      http.get("/changed?files=#{File.basename(filename)}")
+    end
+  rescue => e
+    p e
   end
 end
