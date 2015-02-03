@@ -7,6 +7,7 @@
     "coffee-script": "^1.8.0",
     "gulp": "^3.8.10",
     "gulp-cached": "^1.0.2",
+    "gulp-convert-encoding": "0.0.3",
     "gulp-imagemin": "^2.1.0",
     "gulp-jade": "^0.11.0",
     "gulp-notify": "^2.2.0",
