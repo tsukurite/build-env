@@ -33,7 +33,7 @@ if util.env.production
     sourceComments: false
 else
   jadeOption =
-    debug: true
+    debug: false
     pretty: true
   sassOption =
     outputStyle: 'nested'
