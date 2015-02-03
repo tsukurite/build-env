@@ -31,3 +31,26 @@ else
   output_style = :nested
   line_comments = true
 end
+
+# http://docs.ruby-lang.org/ja/2.1.0/doc/
+input_encoding = Encoding::UTF_8.name
+output_encoding = Encoding::Shift_JIS.name
+
+# convert encoding and replace charset when saved
+on_stylesheet_saved do |filename|
+  return if input_encoding == output_encoding
+
+  # convert and replace
+  File.open("#{filename}.bak", "w:#{output_encoding}") do |output|
+
+    # save to tempfile
+    File.open(filename, "r:#{input_encoding}") do |input|
+      input.each do |line|
+        output << line.gsub(/@charset.*/, %Q{@charset "#{output_encoding}";})
+      end
+    end
+
+    # overwrite css
+    File.rename("#{filename}.bak", filename)
+  end
+end
