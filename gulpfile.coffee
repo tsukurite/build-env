@@ -106,6 +106,7 @@ gulp.task 'server', ->
   gulp
     .src('.')
     .pipe(server(
+      open: true
       livereload: false
       middleware: [
         serve(
