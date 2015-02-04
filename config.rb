@@ -40,17 +40,16 @@ output_encoding = Encoding::Shift_JIS.name
 on_stylesheet_saved do |filename|
   # convert and replace
   File.open("#{filename}.bak", "w:#{output_encoding}") do |output|
-
     # save to tempfile
     File.open(filename, "r:#{input_encoding}") do |input|
       input.each do |line|
-        output << line.gsub(/@charset[^;]*?/, %Q{@charset "#{output_encoding}"})
+        output << line.gsub(/@charset[^;]*?;/, %Q{@charset "#{output_encoding}";})
       end
     end
-
-    # overwrite css
-    File.rename("#{filename}.bak", filename)
   end
+
+  # overwrite css
+  File.rename("#{filename}.bak", filename)
 
   # request LiveReload
   begin

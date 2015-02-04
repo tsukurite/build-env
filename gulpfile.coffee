@@ -6,11 +6,11 @@ sassOutput  = '../webroot/css'
 imageOutput = '../webroot/image'
 
 jadeEncoding =
-  from: 'utf8'
-  to: 'shift_jis'
+  from: 'utf-8'
+  to: 'Shift_JIS'
 sassEncoding =
-  from: 'utf8'
-  to: 'shift_jis'
+  from: 'utf-8'
+  to: 'Shift_JIS'
 
 jadeTarget  = './jade/**/!(_)*.jade'
 sassTarget  = './scss/**/!(_)*.scss'
@@ -106,10 +106,20 @@ gulp.task 'server', ->
   gulp
     .src('.')
     .pipe(server(
-      livereload: true
+      livereload: false
       middleware: [
-        serve(webrootDirectory)
-        serve(viewDirectory)
+        serve(
+          webrootDirectory,
+          setHeaders: (res, path, stat) ->
+            if /\.css$/.test(path)
+              res.setHeader('Content-Type', "text/css; charset=#{sassEncoding.to}")
+        )
+        serve(
+          viewDirectory,
+          setHeaders: (res, path, stat) ->
+            if /\.html?$/.test(path)
+              res.setHeader('Content-Type', "text/html; charset=#{jadeEncoding.to}")
+        )
       ]
     ))
 
