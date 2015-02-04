@@ -44,7 +44,7 @@ on_stylesheet_saved do |filename|
     # save to tempfile
     File.open(filename, "r:#{input_encoding}") do |input|
       input.each do |line|
-        output << line.gsub(/@charset.*/, %Q{@charset "#{output_encoding}";})
+        output << line.gsub(/@charset[^;]*?/, %Q{@charset "#{output_encoding}"})
       end
     end
 
