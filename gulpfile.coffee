@@ -2,8 +2,12 @@ viewDirectory    = '../views'
 webrootDirectory = '../webroot'
 
 jadeOutput  = '../views'
-sassOutput  = '../webroot/css'
-imageOutput = '../webroot/image'
+sassOutput  = '../webroot'
+imageOutput = '../webroot'
+
+jadeTarget  = './views/**/!(_)*.jade'
+sassTarget  = './webroot/**/!(_)*.scss'
+imageTarget = './webroot/**/*.{gif,jpg,jpeg,png}'
 
 jadeEncoding =
   from: 'utf-8'
@@ -11,10 +15,6 @@ jadeEncoding =
 sassEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
-
-jadeTarget  = './jade/**/!(_)*.jade'
-sassTarget  = './scss/**/!(_)*.scss'
-imageTarget = './image/**/*.{gif,jpg,jpeg,png}'
 
 exec = require('child_process').exec
 
@@ -106,14 +106,10 @@ gulp.task 'server', ->
   gulp
     .src('.')
     .pipe(server(
+      open: true
       livereload: false
       middleware: [
-        serve(
-          webrootDirectory,
-          setHeaders: (res, path, stat) ->
-            if /\.css$/.test(path)
-              res.setHeader('Content-Type', "text/css; charset=#{sassEncoding.to}")
-        )
+        serve(webrootDirectory)
         serve(
           viewDirectory,
           setHeaders: (res, path, stat) ->
