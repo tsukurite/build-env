@@ -6,9 +6,7 @@ npm-debug.log
 /.sass-cache/
 
 # asset
-jade/*
-!jade/.gitkeep
-scss/*
-!scss/.gitkeep
-image/*
-!image/.gitkeep
+views/*
+!views/.gitkeep
+webroot/*
+!webroot/.gitkeep
