@@ -3,8 +3,10 @@ npm-debug.log
 /node_modules/
 
 # ruby
-/bin/ruby/gem/
+/.bundle/
 /.sass-cache/
+/bin/ruby/gem/
+Gemfile.lock
 
 # asset
 views/*

@@ -62,6 +62,7 @@ gulp.task 'sass', ->
       if util.env.production
       then 'compass compile --config config.rb --environment production --force'
       else 'compass compile --config config.rb'
+    command = "bundle exec #{command}" if util.env.bundler
     p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
@@ -87,7 +88,9 @@ gulp.task 'image', ->
 
 gulp.task 'watch', ->
   if util.env.compass
-    p = exec('compass watch --config config.rb', (err, stdout, stderr) ->
+    command = 'compass watch --config config.rb'
+    command = "bundle exec #{command}" if util.env.bundler
+    p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
       util.log(stderr)
