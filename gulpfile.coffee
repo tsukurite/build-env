@@ -16,6 +16,7 @@ sassEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
 
+fs   = require 'fs'
 exec = require('child_process').exec
 
 gulp    = require 'gulp'
@@ -62,7 +63,7 @@ gulp.task 'sass', ->
       if util.env.production
       then 'compass compile --config config.rb --environment production --force'
       else 'compass compile --config config.rb'
-    command = "bundle exec #{command}" if util.env.bundler
+    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
     p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
@@ -89,7 +90,7 @@ gulp.task 'image', ->
 gulp.task 'watch', ->
   if util.env.compass
     command = 'compass watch --config config.rb'
-    command = "bundle exec #{command}" if util.env.bundler
+    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
     p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
