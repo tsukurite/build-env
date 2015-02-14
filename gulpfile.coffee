@@ -70,6 +70,8 @@ gulp.task 'sass', ->
       util.log(stderr)
     )
     p.on('error', (err) -> util.log(err))
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
   else
     gulp
       .src(sassTarget)
@@ -97,6 +99,8 @@ gulp.task 'watch', ->
       util.log(stderr)
     )
     p.on('error', (err) -> util.log(err))
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
     process.on('exit', (code) -> p.kill('SIGINT'))
   else
     watch(sassTarget, -> gulp.start('sass'))
