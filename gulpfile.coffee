@@ -117,7 +117,12 @@ gulp.task 'server', ->
       open: true
       livereload: false
       middleware: [
-        serve(webrootDirectory)
+        serve(
+          webrootDirectory,
+          setHeaders: (res, path, stat) ->
+            if /\.css$/.test(path)
+              res.setHeader('Content-Type', "text/css; charset=#{sassEncoding.to}")
+        )
         serve(
           viewDirectory,
           setHeaders: (res, path, stat) ->
