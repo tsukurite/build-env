@@ -37,6 +37,8 @@ if util.env.production
   jadeOption =
     debug: false
     pretty: true
+    data:
+      production: true
   sassOption =
     outputStyle: 'compressed'
     sourceComments: false
@@ -44,6 +46,8 @@ else
   jadeOption =
     debug: false
     pretty: true
+    data:
+      production: false
   sassOption =
     outputStyle: 'nested'
     sourceComments: true
