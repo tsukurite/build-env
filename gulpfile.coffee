@@ -9,6 +9,8 @@ jadeTarget  = './views/**/!(_)*.jade'
 sassTarget  = './webroot/**/!(_)*.scss'
 imageTarget = './webroot/**/*.{gif,jpg,jpeg,png}'
 
+jadeBaseDir = './views'
+
 jadeEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
@@ -37,6 +39,7 @@ if util.env.production
   jadeOption =
     debug: false
     pretty: true
+    basedir: jadeBaseDir
     data:
       production: true
   sassOption =
@@ -46,6 +49,7 @@ else
   jadeOption =
     debug: false
     pretty: true
+    basedir: jadeBaseDir
     data:
       production: false
   sassOption =
