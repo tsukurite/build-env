@@ -1,39 +1,54 @@
 # build-env
 
-build environment for frontend engineers
+build environment on WindowsOS for frontend engineers
 
-## how to setup
+## セットアップ
 
-execute `setup.bat`.
+### Windows
 
-## how to use
+1. [releases](https://github.com/tsukurite/build-env/releases)から新しいバージョンのzipファイルをダウンロードする
+2. ダウンロードしたzipファイルをリポジトリ内の任意の場所に展開する
+3. `ignore.bat`を実行して一部のディレクトリをリポジトリの管理から除外する
+4. `setup.bat`を実行して各種モジュール等をインストールする
+5. 後述のバッチファイルを実行する
 
-execute batch file.
+### OS X
+
+1. [releases](https://github.com/tsukurite/build-env/releases)から新しいバージョンのzipファイルをダウンロードする
+2. ダウンロードしたzipファイルをリポジトリ内の任意の場所に展開する
+3. `$ npm install` needs **node.js ver.0.10.36 and npm ver.2.0 or later**
+4. `$ rake install` needs **Ruby ver.2.1.5 and Bundler ver.1.8.2 or later**
+5. `package.json`と`gulpfile.coffee`を見てなんとかする（`$ npm start -- develop`や`$ npm start -- compile --compass`など）
+
+## バッチファイル
 
 ### `compile.bat`
 
-- compile jade
-- compile sass
-- minify image
-
-### `develop.bat`
-
-- start http server
-- start livereload
-- start watch files
-  - compile jade
-  - compile sass
-  - minify image
+- 公開時に使用する
+- `gulp-jade`によるJadeのコンパイル
+- `gulp-sass`によるSassのコンパイル
+- `gulp-imagemin`による画像の最適化
 
 ### `compile-compass.bat`
 
-it about same as `compile.bat`, but use compass for Sass.
+- `compile.bat`と同じ
+- ただしSassのコンパイルにCompassを使用する
+
+### `develop.bat`
+
+- 開発時に使用する
+- `gulp-webserver`によるローカルHTTPサーバ
+- `gulp-watch`による保存時の自動コンパイル
+  - `gulp-jade`によるJadeのコンパイル
+  - `gulp-sass`によるSassのコンパイル
+  - `gulp-imagemin`による画像の最適化
 
 ### `develop-compass.bat`
 
-it about same as `develop.bat`, but use compass for Sass.
+- `develop.bat`と同じ
+- ただしSassのコンパイルにCompassを使用する
 
-## binaries
+## included binaries
 
 - [node.js](http://nodejs.org/)
   - [node ver.0.10.36 (x64)](http://nodejs.org/dist/v0.10.36/x64/node.exe)
