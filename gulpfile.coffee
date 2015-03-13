@@ -5,11 +5,11 @@ jadeOutput  = '../views'
 sassOutput  = '../webroot'
 imageOutput = '../webroot'
 
-jadeTarget  = './views/**/!(_)*.jade'
+jadeBaseDir = './views'
+jadeTarget  = "#{jadeBaseDir}/**/!(_)*.jade"
+
 sassTarget  = './webroot/**/!(_)*.scss'
 imageTarget = './webroot/**/*.{gif,jpg,jpeg,png}'
-
-jadeBaseDir = './views'
 
 jadeEncoding =
   from: 'utf-8'
