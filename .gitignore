@@ -2,13 +2,14 @@
 npm-debug.log
 /node_modules/
 
-# compass
+# ruby
+/.bundle/
 /.sass-cache/
+/bin/ruby/gem/
+Gemfile.lock
 
 # asset
-jade/*
-!jade/.gitkeep
-scss/*
-!scss/.gitkeep
-image/*
-!image/.gitkeep
+views/*
+!views/.gitkeep
+webroot/*
+!webroot/.gitkeep

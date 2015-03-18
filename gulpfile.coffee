@@ -5,7 +5,9 @@ jadeOutput  = '../views'
 sassOutput  = '../webroot'
 imageOutput = '../webroot'
 
-jadeTarget  = './views/**/!(_)*.jade'
+jadeBaseDir = './views'
+jadeTarget  = "#{jadeBaseDir}/**/!(_)*.jade"
+
 sassTarget  = './webroot/**/!(_)*.scss'
 imageTarget = './webroot/**/*.{gif,jpg,jpeg,png}'
 
@@ -16,6 +18,7 @@ sassEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
 
+fs   = require 'fs'
 exec = require('child_process').exec
 
 gulp    = require 'gulp'
@@ -36,6 +39,9 @@ if util.env.production
   jadeOption =
     debug: false
     pretty: true
+    basedir: jadeBaseDir
+    data:
+      production: true
   sassOption =
     outputStyle: 'compressed'
     sourceComments: false
@@ -43,6 +49,9 @@ else
   jadeOption =
     debug: false
     pretty: true
+    basedir: jadeBaseDir
+    data:
+      production: false
   sassOption =
     outputStyle: 'nested'
     sourceComments: true
@@ -62,12 +71,15 @@ gulp.task 'sass', ->
       if util.env.production
       then 'compass compile --config config.rb --environment production --force'
       else 'compass compile --config config.rb'
+    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
     p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
       util.log(stderr)
     )
     p.on('error', (err) -> util.log(err))
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
   else
     gulp
       .src(sassTarget)
@@ -87,12 +99,16 @@ gulp.task 'image', ->
 
 gulp.task 'watch', ->
   if util.env.compass
-    p = exec('compass watch --config config.rb', (err, stdout, stderr) ->
+    command = 'compass watch --config config.rb'
+    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
+    p = exec(command, (err, stdout, stderr) ->
       util.log(err) if err
       util.log(stdout)
       util.log(stderr)
     )
     p.on('error', (err) -> util.log(err))
+    p.stdout.pipe(process.stdout)
+    p.stderr.pipe(process.stderr)
     process.on('exit', (code) -> p.kill('SIGINT'))
   else
     watch(sassTarget, -> gulp.start('sass'))
@@ -109,7 +125,12 @@ gulp.task 'server', ->
       open: true
       livereload: false
       middleware: [
-        serve(webrootDirectory)
+        serve(
+          webrootDirectory,
+          setHeaders: (res, path, stat) ->
+            if /\.css$/.test(path)
+              res.setHeader('Content-Type', "text/css; charset=#{sassEncoding.to}")
+        )
         serve(
           viewDirectory,
           setHeaders: (res, path, stat) ->

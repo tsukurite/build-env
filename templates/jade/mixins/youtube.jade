@@ -1,0 +1,16 @@
+//-
+
+  使用方法：
+
+  include youtube
+
+  +youtube({ src: 'https://www.youtube.com/embed/FFdjjU7i9YY', width: 560, height: 315 })
+
+mixin youtube(param)
+  iframe(
+    src!="#{param.src}?rel=0&wmode=transparent&enablejsapi=1"
+    width=param.width || 560
+    height=param.height || 315
+    frameborder=0
+    allowfullscreen
+  )
