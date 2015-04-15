@@ -122,6 +122,7 @@ gulp.task 'server', ->
   gulp
     .src('.')
     .pipe(server(
+      port: 10293
       open: true
       livereload: false
       middleware: [
