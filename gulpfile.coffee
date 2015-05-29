@@ -18,9 +18,6 @@ sassEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
 
-fs   = require 'fs'
-exec = require('child_process').exec
-
 gulp    = require 'gulp'
 util    = require 'gulp-util'
 jade    = require 'gulp-jade'
@@ -66,28 +63,13 @@ gulp.task 'jade', ->
     .pipe(gulp.dest(jadeOutput))
 
 gulp.task 'sass', ->
-  if util.env.compass
-    command =
-      if util.env.production
-      then 'compass compile --config config.rb --environment production --force'
-      else 'compass compile --config config.rb'
-    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
-    p = exec(command, (err, stdout, stderr) ->
-      util.log(err) if err
-      util.log(stdout)
-      util.log(stderr)
-    )
-    p.on('error', (err) -> util.log(err))
-    p.stdout.pipe(process.stdout)
-    p.stderr.pipe(process.stderr)
-  else
-    gulp
-      .src(sassTarget)
-      .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-      .pipe(cached('sass'))
-      .pipe(sass(sassOption))
-      .pipe(convert(sassEncoding))
-      .pipe(gulp.dest(sassOutput))
+  gulp
+    .src(sassTarget)
+    .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
+    .pipe(cached('sass'))
+    .pipe(sass(sassOption))
+    .pipe(convert(sassEncoding))
+    .pipe(gulp.dest(sassOutput))
 
 gulp.task 'image', ->
   gulp
@@ -98,24 +80,9 @@ gulp.task 'image', ->
     .pipe(gulp.dest(imageOutput))
 
 gulp.task 'watch', ->
-  if util.env.compass
-    command = 'compass watch --config config.rb'
-    command = "bundle exec #{command}" if try fs.statSync('./.bundle').isDirectory()
-    p = exec(command, (err, stdout, stderr) ->
-      util.log(err) if err
-      util.log(stdout)
-      util.log(stderr)
-    )
-    p.on('error', (err) -> util.log(err))
-    p.stdout.pipe(process.stdout)
-    p.stderr.pipe(process.stderr)
-    process.on('exit', (code) -> p.kill('SIGINT'))
-  else
-    watch(sassTarget, -> gulp.start('sass'))
-
-  watch(jadeTarget,  -> gulp.start('jade'))
+  watch(jadeTarget, -> gulp.start('jade'))
+  watch(sassTarget, -> gulp.start('sass'))
   watch(imageTarget, -> gulp.start('image'))
-
   return
 
 gulp.task 'server', ->

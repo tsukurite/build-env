@@ -18,7 +18,7 @@ build environment on WindowsOS for frontend engineers
 2. ダウンロードしたzipファイルをリポジトリ内の任意の場所に展開する
 3. `$ npm install` needs **node.js ver.0.10.36 and npm ver.2.0 or later**
 4. `$ rake install` needs **Ruby ver.2.1.5 and Bundler ver.1.8.2 or later**
-5. `package.json`と`gulpfile.coffee`を見てなんとかする（`$ npm start -- develop`や`$ npm start -- compile --compass`など）
+5. `package.json`と`gulpfile.coffee`を見てなんとかする（`$ npm start -- develop`や`$ npm start -- compile`など）
 
 ## バッチファイル
 
@@ -29,11 +29,6 @@ build environment on WindowsOS for frontend engineers
 - `gulp-sass`によるSassのコンパイル
 - `gulp-imagemin`による画像の最適化
 
-### `compile-compass.bat`
-
-- `compile.bat`と同じ
-- ただしSassのコンパイルにCompassを使用する
-
 ### `develop.bat`
 
 - 開発時に使用する
@@ -43,11 +38,6 @@ build environment on WindowsOS for frontend engineers
   - `gulp-sass`によるSassのコンパイル
   - `gulp-imagemin`による画像の最適化
 
-### `develop-compass.bat`
-
-- `develop.bat`と同じ
-- ただしSassのコンパイルにCompassを使用する
-
 ## included binaries
 
 - [node.js](http://nodejs.org/)
@@ -55,9 +45,3 @@ build environment on WindowsOS for frontend engineers
     - [nodejs.org - Index of /dist/](http://nodejs.org/dist/)
   - [npm ver.1.4.12](http://nodejs.org/dist/npm/npm-1.4.12.zip)
     - [nodejs.org - Index of /dist/npm/](http://nodejs.org/dist/npm/)
-
-- [Ruby](https://www.ruby-lang.org/)
-  - [Ruby ver.2.1.5 (x64)](http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.1.5-x64-mingw32.7z?direct)
-    - [Ruby Installer for Windows - Downloads](http://rubyinstaller.org/downloads/)
-  - [AddTrustExternalCARoot-2048.pem](https://raw.githubusercontent.com/rubygems/rubygems/master/lib/rubygems/ssl_certs/AddTrustExternalCARoot-2048.pem)
-    - [SSL upgrades on rubygems.org and RubyInstaller versions](https://gist.github.com/luislavena/f064211759ee0f806c88)
