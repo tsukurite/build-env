@@ -5,5 +5,7 @@ npm-debug.log
 # asset
 views/*
 !views/.gitkeep
+sprites/*
+!sprites/.gitkeep
 webroot/*
 !webroot/.gitkeep

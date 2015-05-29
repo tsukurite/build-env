@@ -1,16 +1,45 @@
+#-- requires -------------------------------------------------------------------
+
+gulp         = require 'gulp'
+util         = require 'gulp-util'
+jade         = require 'gulp-jade'
+sass         = require 'gulp-sass'
+watch        = require 'gulp-watch'
+server       = require 'gulp-webserver'
+cached       = require 'gulp-cached'
+notify       = require 'gulp-notify'
+plumber      = require 'gulp-plumber'
+convert      = require 'gulp-convert-encoding'
+imagemin     = require 'gulp-imagemin'
+spritesmith  = require 'gulp.spritesmith'
+autoprefixer = require 'gulp-autoprefixer'
+
+serveStatic = require 'serve-static'
+runSequence = require 'run-sequence'
+
+#-- settings -------------------------------------------------------------------
+
+# serve directories for gulp-webserver
 viewDirectory    = '../views'
 webrootDirectory = '../webroot'
 
-jadeOutput  = '../views'
-sassOutput  = '../webroot'
-imageOutput = '../webroot'
+# output directories
+jadeOutput           = '../views'
+sassOutput           = '../webroot'
+imageminOutput       = '../webroot'
+spritesmithCssOutput = './webroot/css'
+spritesmithImgOutput = './webroot/images'
 
+# jade basedir option
 jadeBaseDir = './views'
-jadeTarget  = "#{jadeBaseDir}/**/!(_)*.jade"
 
-sassTarget  = './webroot/**/!(_)*.scss'
-imageTarget = './webroot/**/*.{gif,jpg,jpeg,png}'
+# input targets
+jadeTarget        = "#{jadeBaseDir}/**/!(_)*.jade"
+sassTarget        = './webroot/**/!(_)*.scss'
+imageminTarget    = './webroot/**/*.{gif,jpg,jpeg,png}'
+spritesmithTarget = './sprites/**/*.{gif,jpg,jpeg,png}'
 
+# input/output encoding
 jadeEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
@@ -18,20 +47,30 @@ sassEncoding =
   from: 'utf-8'
   to: 'Shift_JIS'
 
-gulp    = require 'gulp'
-util    = require 'gulp-util'
-jade    = require 'gulp-jade'
-sass    = require 'gulp-sass'
-image   = require 'gulp-imagemin'
-watch   = require 'gulp-watch'
-server  = require 'gulp-webserver'
-cached  = require 'gulp-cached'
-notify  = require 'gulp-notify'
-plumber = require 'gulp-plumber'
-convert = require 'gulp-convert-encoding'
+# imagemin option
+imageminOption =
+  progressive: false
 
-serve = require 'serve-static'
+# spritesmith option
+spritesmithOption =
+  imgName: 'sprites.png'
+  cssName: 'sprites.scss'
 
+# autoprefixer option
+autoprefixerOption =
+  # examples:
+  #   'IE >= 8'
+  #   'iOS >= 8'
+  #   'Android >= 4'
+  #   'ChromeAndroid >= 42'
+  # more infomation:
+  #   https://github.com/ai/browserslist#queries
+  #   https://github.com/ai/browserslist#browsers
+  browsers: [
+    'last 2 versions'
+  ]
+
+# options for production
 if util.env.production
   jadeOption =
     debug: false
@@ -42,6 +81,7 @@ if util.env.production
   sassOption =
     outputStyle: 'compressed'
     sourceComments: false
+# options for development
 else
   jadeOption =
     debug: false
@@ -50,40 +90,57 @@ else
     data:
       production: false
   sassOption =
-    outputStyle: 'nested'
+    outputStyle: 'expanded'
     sourceComments: true
+
+#-- tasks ----------------------------------------------------------------------
 
 gulp.task 'jade', ->
   gulp
     .src(jadeTarget)
     .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-    .pipe(cached('jade'))
-    .pipe(jade(jadeOption))
-    .pipe(convert(jadeEncoding))
-    .pipe(gulp.dest(jadeOutput))
+    .pipe(cached('jade'))         # cache file
+    .pipe(jade(jadeOption))       # execute jade
+    .pipe(convert(jadeEncoding))  # convert encoding
+    .pipe(gulp.dest(jadeOutput))  # output html
 
 gulp.task 'sass', ->
   gulp
     .src(sassTarget)
     .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-    .pipe(cached('sass'))
-    .pipe(sass(sassOption))
-    .pipe(convert(sassEncoding))
-    .pipe(gulp.dest(sassOutput))
+    .pipe(cached('sass'))                    # cache file
+    .pipe(sass(sassOption))                  # execute sass
+    .pipe(autoprefixer(autoprefixerOption))  # execute autoprefixer
+    .pipe(convert(sassEncoding))             # convert encoding
+    .pipe(gulp.dest(sassOutput))             # output css
 
-gulp.task 'image', ->
+gulp.task 'imagemin', ->
   gulp
-    .src(imageTarget)
+    .src(imageminTarget)
     .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-    .pipe(cached('image'))
-    .pipe(image(progressive: false))
-    .pipe(gulp.dest(imageOutput))
+    .pipe(cached('imagemin'))         # cache file
+    .pipe(imagemin(imageminOption))   # execute imagemin
+    .pipe(gulp.dest(imageminOutput))  # output minimized image
+
+gulp.task 'spritesmith', ->
+  sprite =
+    gulp
+      .src(spritesmithTarget)
+      .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
+      .pipe(spritesmith(spritesmithOption))         # execute spritesmith
+  sprite.css.pipe(gulp.dest(spritesmithCssOutput))  # output sprite css
+  sprite.img.pipe(gulp.dest(spritesmithImgOutput))  # output sprite image
+  sprite
 
 gulp.task 'watch', ->
-  watch(jadeTarget, -> gulp.start('jade'))
-  watch(sassTarget, -> gulp.start('sass'))
-  watch(imageTarget, -> gulp.start('image'))
+  watch(jadeTarget,        -> gulp.start('jade'))
+  watch(sassTarget,        -> gulp.start('sass'))
+  watch(imageminTarget,    -> gulp.start('imagemin'))
+  watch(spritesmithTarget, -> gulp.start('spritesmith'))
   return
+
+gulp.task 'image', ->
+  runSequence('spritesmith', 'imagemin')
 
 gulp.task 'server', ->
   gulp
@@ -93,13 +150,13 @@ gulp.task 'server', ->
       open: true
       livereload: false
       middleware: [
-        serve(
+        serveStatic(
           webrootDirectory,
           setHeaders: (res, path, stat) ->
             if /\.css$/.test(path)
               res.setHeader('Content-Type', "text/css; charset=#{sassEncoding.to}")
         )
-        serve(
+        serveStatic(
           viewDirectory,
           setHeaders: (res, path, stat) ->
             if /\.html?$/.test(path)
@@ -108,6 +165,7 @@ gulp.task 'server', ->
       ]
     ))
 
+# aliases
 gulp.task 'compile', ['jade', 'sass', 'image']
 gulp.task 'develop', ['server', 'watch']
-gulp.task 'default', ['server', 'watch']
+gulp.task 'default', ['develop']
