@@ -1,6 +1,8 @@
 {
   "private": true,
   "scripts": {
+    "dev": "npm ru start -- develop",
+    "min": "npm ru start -- compile --production",
     "start": "gulp --require coffee-script/register"
   },
   "devDependencies": {
