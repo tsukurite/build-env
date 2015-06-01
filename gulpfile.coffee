@@ -34,8 +34,8 @@ spritesmithImgOutput = './webroot/images'
 jadeBaseDir = './views'
 
 # input targets
-jadeTarget        = "#{jadeBaseDir}/**/!(_)*.jade"
-sassTarget        = './webroot/**/!(_)*.scss'
+jadeTarget        = "#{jadeBaseDir}/**/*.jade"
+sassTarget        = './webroot/**/*.scss'
 imageminTarget    = './webroot/**/*.{gif,jpg,jpeg,png}'
 spritesmithTarget = './sprites/**/*.{gif,jpg,jpeg,png}'
 
