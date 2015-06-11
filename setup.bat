@@ -1,3 +1,7 @@
+@echo off
+
+cd "%~dp0"
+
 call env.bat
 
 rmdir /s /q node_modules
