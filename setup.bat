@@ -1,5 +1,7 @@
 call env.bat
 
+rmdir /s /q node_modules
+
 call npm.cmd install -g npm
 call npm.cmd install
 
