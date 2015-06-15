@@ -1,5 +1,8 @@
 #-- requires -------------------------------------------------------------------
 
+fs   = require 'fs'
+path = require 'path'
+
 gulp         = require 'gulp'
 util         = require 'gulp-util'
 jade         = require 'gulp-jade'
@@ -37,7 +40,10 @@ jadeBaseDir = './views'
 jadeTarget        = "#{jadeBaseDir}/**/*.jade"
 sassTarget        = './webroot/**/*.scss'
 imageminTarget    = './webroot/**/*.{gif,jpg,jpeg,png}'
-spritesmithTarget = './sprites/**/*.{gif,jpg,jpeg,png}'
+spritesmithTarget = './sprites'
+
+spritesmithTargetDir  = spritesmithTarget
+spritesmithTargetFile = '/**/*.{gif,jpg,jpeg,png}'
 
 # input/output encoding
 jadeEncoding =
@@ -53,8 +59,8 @@ imageminOption =
 
 # spritesmith option
 spritesmithOption =
-  imgName: 'sprites.png'
-  cssName: 'sprites.scss'
+  imgNamePrefix: '.png'
+  cssNamePrefix: '.scss'
 
 # autoprefixer option
 autoprefixerOption =
@@ -123,14 +129,27 @@ gulp.task 'imagemin', ->
     .pipe(gulp.dest(imageminOutput))  # output minimized image
 
 gulp.task 'spritesmith', ->
-  sprite =
-    gulp
-      .src(spritesmithTarget)
-      .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
-      .pipe(spritesmith(spritesmithOption))         # execute spritesmith
-  sprite.css.pipe(gulp.dest(spritesmithCssOutput))  # output sprite css
-  sprite.img.pipe(gulp.dest(spritesmithImgOutput))  # output sprite image
-  sprite
+  spriteDirs = fs.readdirSync("#{spritesmithTargetDir}")
+  spriteDirs.map (entry) ->
+    # entry path
+    targetDir = "#{spritesmithTargetDir}/#{entry}"
+
+    # return if entry is not a directory
+    return null if not fs.statSync(targetDir).isDirectory()
+
+    sprite =
+      gulp
+        .src("#{targetDir}/#{spritesmithTargetFile}")
+        .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
+        .pipe(spritesmith(
+          imgName: entry + spritesmithOption.imgNamePrefix
+          cssName: entry + spritesmithOption.cssNamePrefix
+        ))
+
+    sprite.css.pipe(gulp.dest(spritesmithCssOutput))  # output sprite css
+    sprite.img.pipe(gulp.dest(spritesmithImgOutput))  # output sprite image
+
+    sprite
 
 gulp.task 'watch', ->
   watch(jadeTarget,        -> gulp.start('jade'))
