@@ -59,8 +59,8 @@ imageminOption =
 
 # spritesmith option
 spritesmithOption =
-  imgNamePrefix: '.png'
-  cssNamePrefix: '.scss'
+  imgNameSuffix: '.png'
+  cssNameSuffix: '.scss'
 
 # autoprefixer option
 autoprefixerOption =
@@ -142,8 +142,8 @@ gulp.task 'spritesmith', ->
         .src("#{targetDir}/#{spritesmithTargetFile}")
         .pipe(plumber(errorHandler: notify.onError('<%= error.message %>')))
         .pipe(spritesmith(
-          imgName: entry + spritesmithOption.imgNamePrefix
-          cssName: entry + spritesmithOption.cssNamePrefix
+          imgName: entry + spritesmithOption.imgNameSuffix
+          cssName: entry + spritesmithOption.cssNameSuffix
         ))
 
     sprite.css.pipe(gulp.dest(spritesmithCssOutput))  # output sprite css
